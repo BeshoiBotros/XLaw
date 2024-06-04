@@ -13,6 +13,9 @@ urlpatterns = [
     path('ownership/organization/<int:organization_pk>/', views.ObjectOwnershipView.as_view()),
     path('ownership/content/<int:content_type_pk>/', views.ObjectOwnershipView.as_view()),
 
+    # get organization by his user
+    path('user-organization/', views.IsOrganizationOwner.as_view())
+
     # payment method URLs
     # ...
 
