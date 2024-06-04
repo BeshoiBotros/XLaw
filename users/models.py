@@ -62,6 +62,10 @@ class LawyerProfile(models.Model):
     experience = models.TextField(blank=True, null=True)
     experience_years = models.IntegerField(null=True, blank=True)
     bio = models.TextField(blank=True, null=True)
+    facebook  = models.URLField(blank=True, null=True)
+    whatsapp  = models.URLField(blank=True, null=True)
+    instagram = models.URLField(blank=True, null=True)
+    linkedin  = models.URLField(blank=True, null=True)
 
 class VerifyToken(models.Model):
     token = models.CharField(max_length=255)

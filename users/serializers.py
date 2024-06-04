@@ -56,4 +56,4 @@ class LawyerProfileSerializer(serializers.ModelSerializer):
     lawyer = LawyerSerializer(read_only=True)
     class Meta:
         model = models.LawyerProfile
-        fields = ['id', 'image', 'lawyer']
+        fields = '__all__'
