@@ -10,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class NewSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.New
-        fields = ['title', 'category', 'subject', 'user']
+        fields = ['title', 'category', 'subject', 'user', "image"]
 
 class SolvedCaseSerializer(serializers.ModelSerializer):
     class Meta:
