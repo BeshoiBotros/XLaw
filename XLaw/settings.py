@@ -169,11 +169,11 @@ USE_TZ = True
 # STATICFILES_DIRS = [BASE_DIR / "static"]
 
 STATIC_URL = "/static/"
-STATIC_ROOT = " /home/api-x-law/static/"
+STATIC_ROOT = "/home/api-x-law/static/"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-MEDIA_ROOT = " /home/api-x-law/media/"
+MEDIA_ROOT = "/home/api-x-law/media/"
 MEDIA_URL = '/media/'
 
 
