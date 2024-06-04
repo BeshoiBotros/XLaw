@@ -93,7 +93,7 @@ class SubCategoryView(APIView):
 
 
 class NewView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         
