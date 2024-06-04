@@ -12,6 +12,7 @@ from drf_yasg import openapi
 from django.apps import apps
 from XLaw import constants
 from django.shortcuts import get_object_or_404
+from django.http import HttpRequest
 
 class OrganizationView(APIView):
     
@@ -212,3 +213,21 @@ class PaymentMethodView(APIView):
     def delete(self, request, pk):
         pass
 
+
+class IsOrganizationOwner(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def get(self, request:HttpRequest):
+        user = request.user
+        
+        if not user.is_lawyer:
+            return Response({'detail':'Only lawyers can have Organizations'})
+        
+        try:
+            organization = models.Organization.objects.get(user=user)
+        except models.Organization.DoesNotExist:
+            return Response({'detail' : 'You do not have an organization'})
+        
+        serializer = serializers.OrganizationSerializer(instance=organization)
+
+        return Response(serializer.data)
