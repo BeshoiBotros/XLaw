@@ -8,6 +8,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from . import filters
 from drf_yasg.utils import swagger_auto_schema
+from users import models as user_models
+from users import serializers as user_serializers
+import json
 
 class CategoryView(APIView):
     permission_classes = [IsAuthenticated]
@@ -99,8 +102,15 @@ class NewView(APIView):
         
         if pk:
             instance = shortcuts.object_is_exist(pk, models.New, "New not found")
+            
+            try:
+                profile = user_models.LawyerProfile.objects.get(lawyer = instance.user)
+            except user_models.LawyerProfile.DoesNotExist:
+                return Response({'detail' : 'Not Found'}, status=status.HTTP_404_NOT_FOUND)
+            
+            profile_serializer = user_serializers.LawyerProfileSerializer(instance=profile)
             serializer = serializers.NewSerializer(instance=instance)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'new' : serializer.data, 'user-profile' : profile_serializer.data}, status=status.HTTP_200_OK)
         
         queryset = models.New.objects.all()
         
@@ -110,8 +120,21 @@ class NewView(APIView):
             queryset = filterset.qs
 
         serializer = serializers.NewSerializer(queryset, many=True)
+        users_profiles = []
+        
+        for new in queryset:
+            user = new.user
+            try:
+                user_profile = user_models.LawyerProfile.objects.get(lawyer = user)
+            except user_models.LawyerProfile.DoesNotExist:
+                user_profile = {}
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            new_serializer = serializers.NewSerializer(instance=new)
+            profile_serializer = user_serializers.LawyerProfileSerializer(instance=user_profile)
+
+            users_profiles.append({'new' : new_serializer.data, 'profile' : profile_serializer.data})
+        
+        return Response(users_profiles, status=status.HTTP_200_OK)
     
     @swagger_auto_schema(request_body=serializers.NewSerializer)
     def post(self, request):

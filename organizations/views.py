@@ -92,7 +92,7 @@ class ObjectOwnershipView(APIView):
     def get(self, request, pk=None, organization_pk=None):
         
         if organization_pk:
-            organization = ContentType(models.Organization, id=organization_pk)
+            organization = get_object_or_404(models.Organization, id=organization_pk)
             queryset = models.ObjectOwnership.objects.filter(organization=organization)
             serializer = serializers.OwnershipSerializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
