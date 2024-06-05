@@ -153,11 +153,12 @@ class ObjectOwnershipView(APIView):
     @swagger_auto_schema(request_body=openapi.Schema(type=openapi.TYPE_OBJECT))
     def patch(self, request, pk):
 
-        ownership_object = get_object_or_404(models.ObjectOwnership, id=pk)
+        ownership_object = shortcuts.object_is_exist(model=models.ObjectOwnership, pk=pk)
 
         try:
             org = models.Organization.objects.get(user=request.user.pk)
-        except models.Organization.DoesNotExist:
+        except models.Organization.DoesNotExist as e:
+            
             return Response({'message' : 'Organization Not foundes'}, status=status.HTTP_404_NOT_FOUND)
 
         if ownership_object.organization.pk is not org.pk:
@@ -180,21 +181,21 @@ class ObjectOwnershipView(APIView):
     
     @swagger_auto_schema(method='delete')
     def delete(self, request, pk):
-
-        ownership_object = get_object_or_404(models.ObjectOwnership, id=pk)
+        ownership_object = shortcuts.object_is_exist(model=models.ObjectOwnership, pk=pk)
 
         try:
             org = models.Organization.objects.get(user=request.user.pk)
         except models.Organization.DoesNotExist:
-            return Response({'message' : 'Organization Not foundes'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Organization not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        if ownership_object.organization.pk is not org.pk:
-            return Response({'message' : 'you can only delete your ownership'}, status=status.HTTP_403_FORBIDDEN)
+        if ownership_object.organization.pk != org.pk:
+            return Response({'message': 'You can only delete your ownership'}, status=status.HTTP_403_FORBIDDEN)
 
-        ownership_object.content_object.delete()
+        if hasattr(ownership_object.content_object, 'delete'):
+            ownership_object.content_object.delete()
+
         ownership_object.delete()
-
-        return Response({'message' : 'Ownership deleted successfully'}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PaymentMethodView(APIView):
